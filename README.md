@@ -3,13 +3,11 @@ this is to process data provided by [MIT CELL TESTING](https://fsae.mit.edu/blog
 
 Analysis:
 
-Cycle Dependence:
-
+Cycle Dependence:  
 Since all of the cells were cylced for less than 100 times, I assumed the test where independent of each other (life time >1000 cycles for these batteries, 
 and there is little change between them) given that assumption, the data was vertically concatenated and fit as one data set per given temperature.
 
-Data Extraction:
-
+Data Extraction:  
 The peakfilter function looks through the code for large current spikes and samples the data around it, If passed a "voltage" analysis 
 all the data surrounding the spikes is removed, whereas an "IR" analysis removes all the data except the spikes.
 The spikes are used to find purely Ohmic resistance (although that was not feasible since the sample times of the data is ~0.1s,
