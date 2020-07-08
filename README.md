@@ -1,8 +1,5 @@
 # MIT-Cell-Analysis
-
-## Project:
-this is to process data provided by [MIT CELL TESTING](https://fsae.mit.edu/blog/2019/10/30/my19-cell-cycling):
-
+this is to process data provided by [MIT CELL TESTING](https://fsae.mit.edu/blog/2019/10/30/my19-cell-cycling):  
 ## Analysis:
 
 ### Cycle Dependence:  
