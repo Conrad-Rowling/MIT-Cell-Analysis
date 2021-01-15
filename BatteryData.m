@@ -13,7 +13,7 @@ classdef BatteryData
    
    methods
         function [IR, IR_SOC, Voltage, V_SOC] = PeakFilter1(I, V, Time)
-            I = diff(I);
+            Di = diff(I);
             V2 = V;
             Di(1:500) = [];
             V(1:500) = [];
@@ -80,7 +80,7 @@ classdef BatteryData
                 end
                 k = k + 1;
             end
-            
+
             Vsoc = Vsoc.*FilterNot;
             Voltage = V2.*FilterNot;
             Vsoc = Vsoc(Vsoc~=0);
@@ -92,11 +92,9 @@ classdef BatteryData
             dI = dI(dI~=0);
             IR = dV./dI;
 
-          
-            
             x = 0;
-            V_Filter = zeros(length(IR));
-            for r = 1:length(IR)
+            V_Filter = zeros(length(Voltage));
+            for r = 1:length(Voltage)
                 if r - x > 200
                     V_Filter(r) = 1;
                     x = r;
@@ -110,11 +108,20 @@ classdef BatteryData
             V_SOC = V_SOC(V_SOC~=0);
         end
         
-        function gprMdl = GPR(X, Y)
-            %takes all the vertically concatenated data
-            sorted_X = sortrows(X);
-            sorted_Y = sortrows(Y);
-            gprMdl = fitrgp(sorted_X, sorted_Y, 'PredictMethod',"exact");
+        function Model = GprMdl(X, Name, Temp) 
+            %Takes combined
+            Sorted_X = sortrows(X);    
+            Model = fitrgp(Sorted_X(:,1),Sorted_X(:,2),'PredictMethod',"exact");
+            [pred,~,ci] = predict(Model,Sorted_X(:,1));
+            figure();
+            plot(Sorted_X(:,1),Sorted_X(:,2),'r.','DisplayName', append(Name,' points'));  
+            hold on
+            plot(Sorted_X(:,1),pred,'b','DisplayName','Prediction');
+            plot(Sorted_X(:,1),ci(:,1),'c','DisplayName','Lower 95% Limit');
+            plot(Sorted_X(:,1),ci(:,2),'k','DisplayName','Upper 95% Limit');
+            legend('show','Location','Best');
+            title(append(Name,' (',Temp,'C)'));
+            shg;
         end
         
         function obj = BatteryData(Vehicle, Parameters, Type)
@@ -123,7 +130,7 @@ classdef BatteryData
                 obj.Vehicle = Vehicle;
                 obj.Date = datestr(now,'yyyy-mm-dd_HH_MM');
                 obj.Type = char(Type);
-                obj.Name = [Vehicle, 'Battery_Analysis', obj.Type, '_', obj.Date];
+                obj.Name = [Vehicle, '_Battery_Analysis_', obj.Type, '_', obj.Date];
                 obj.Notes{1} = input('Please Note Primary Parameter Changes: \n', 's');
                 obj.Parameters = Parameters;
 
